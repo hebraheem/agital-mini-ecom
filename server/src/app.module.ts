@@ -2,13 +2,13 @@ import { Module, ValidationPipe } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GlobalConfigModule } from './config/config.module';
-import { APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt.guard';
-import { PrismaModule } from './prisma/prisma.module';
+import { ExceptionsFilter } from './common/filters/exception.filter';
 
 @Module({
-  imports: [GlobalConfigModule, AuthModule, PrismaModule],
+  imports: [GlobalConfigModule, AuthModule],
   controllers: [AppController],
   providers: [
     AppService,
@@ -19,6 +19,10 @@ import { PrismaModule } from './prisma/prisma.module';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: ExceptionsFilter,
     },
   ],
 })

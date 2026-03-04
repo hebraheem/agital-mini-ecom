@@ -13,8 +13,9 @@ datasource db {
 model User {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   email     String    @unique
-  name      String?
+  name      String
   birthdate DateTime?
+  password  String
   reviews   Review[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
