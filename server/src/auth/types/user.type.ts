@@ -120,3 +120,37 @@ export class UserLoginRequestDto {
   @MinLength(8)
   password: string;
 }
+
+export class UserUpdateRequestDto {
+  @ApiProperty({
+    description: 'Full name of the user',
+    example: 'John Doe',
+    minLength: 3,
+    maxLength: 150,
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(3)
+  @MaxLength(150)
+  name: string;
+
+  @ApiProperty({
+    description: 'Email address of the user',
+    example: 'max.müller@agital.online',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @ApiProperty({
+    description: 'Birthdate of the user (optional)',
+    example: '1990-01-01',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  birthdate?: Date | null;
+}

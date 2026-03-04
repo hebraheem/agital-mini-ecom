@@ -6,12 +6,17 @@ import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt.guard';
 import { ExceptionsFilter } from './common/filters/exception.filter';
+import { UserModule } from './user/user.module';
 
 @Module({
-  imports: [GlobalConfigModule, AuthModule],
+  imports: [GlobalConfigModule, AuthModule, UserModule],
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_FILTER,
+      useClass: ExceptionsFilter,
+    },
     {
       provide: APP_PIPE,
       useClass: ValidationPipe,
@@ -19,10 +24,6 @@ import { ExceptionsFilter } from './common/filters/exception.filter';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
-    },
-    {
-      provide: APP_FILTER,
-      useClass: ExceptionsFilter,
     },
   ],
 })
