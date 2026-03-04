@@ -1,11 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import {
-  appConfig,
-  authConfig,
-  databaseConfig,
-  validationSchema,
-} from './config';
+import { appConfig, authConfig, databaseConfig, validationSchema } from './config';
 
 @Module({
   imports: [

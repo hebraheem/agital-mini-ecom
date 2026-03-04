@@ -2,12 +2,9 @@ import { registerAs } from '@nestjs/config';
 import * as joi from 'joi';
 
 export const validationSchema = joi.object({
-  NODE_ENV: joi
-    .string()
-    .valid('development', 'staging', 'production')
-    .default('development'),
+  NODE_ENV: joi.string().valid('development', 'staging', 'production').default('development'),
   PORT: joi.number().default(3001),
-  DATABASE_URL: joi.string().optional(),
+  DATABASE_URL: joi.string(),
   JWT_SECRET: joi.string().required().min(32),
   JWT_EXPIRATION: joi.string().default('1h'),
   BCRYPT_ROUNDS: joi.number().default(10),
@@ -16,10 +13,9 @@ export const validationSchema = joi.object({
   JWT_REFRESH_SECRET: joi.string().required().min(32),
   JWT_REFRESH_EXPIRATION: joi.string().default('3d'),
   CORS_ORIGIN: joi.string().default('*'),
-  LOG_LEVEL: joi
-    .string()
-    .valid('debug', 'info', 'warn', 'error')
-    .default('info'),
+  DB_PASSWORD: joi.string().required(),
+  DB_USERNAME: joi.string().required(),
+  LOG_LEVEL: joi.string().valid('debug', 'info', 'warn', 'error').default('info'),
 });
 
 export const appConfig = registerAs('app', () => ({
