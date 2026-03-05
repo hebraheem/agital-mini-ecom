@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ReviewService } from './review.service';
 import { PublicUrl } from '../common/decorators/public.decorator';
@@ -52,7 +52,7 @@ export class ReviewController {
     return this.reviewService.createReview(createReviewDto, userId);
   }
 
-  @Put(':id')
+  @Patch(':id')
   @ApiOperation({ summary: 'Update an existing review' })
   @ApiBearerAuth('bearer')
   @ApiResponse({

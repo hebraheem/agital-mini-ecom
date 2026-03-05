@@ -1,7 +1,6 @@
 import {
   Controller,
   Post,
-  Put,
   Get,
   Delete,
   Body,
@@ -11,6 +10,7 @@ import {
   UseInterceptors,
   HttpStatus,
   HttpCode,
+  Patch,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import {
@@ -67,7 +67,7 @@ export class ProductController {
     return this.productService.createProduct(body, files);
   }
 
-  @Put(':id')
+  @Patch(':id')
   @ApiBearerAuth('bearer')
   @ApiOperation({ summary: 'Update an existing product' })
   @ApiConsumes('multipart/form-data')

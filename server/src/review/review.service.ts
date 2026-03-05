@@ -99,7 +99,7 @@ export class ReviewService {
     updateReviewDto: UpdateReviewDto,
     userId: string,
   ): Promise<ResponseType<ReviewResponseDto>> {
-    const review = this.prismaService.review.findFirst({
+    const review = await this.prismaService.review.findFirst({
       where: { id, userId },
     });
     if (!review) {
