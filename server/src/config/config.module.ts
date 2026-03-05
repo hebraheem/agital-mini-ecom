@@ -5,7 +5,7 @@ import { appConfig, authConfig, databaseConfig, validationSchema } from './confi
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ['.env.development.local'],
+      envFilePath: ['.env'],
       validationSchema,
       isGlobal: true,
       cache: true,

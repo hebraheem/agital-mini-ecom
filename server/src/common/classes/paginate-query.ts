@@ -1,5 +1,6 @@
 import { ListResponseType } from '../types/response.type';
 import { PrismaDelegate } from '../types/prisma-delegate';
+import { BadRequestException } from '@nestjs/common';
 
 export class PaginateQuery<
   TResponse,
@@ -13,6 +14,7 @@ export class PaginateQuery<
     private readonly where?: Record<string, any>,
     private readonly include?: Record<string, any>,
     private readonly mapper?: (items: TEntity[]) => TResponse[],
+    private readonly orderBy?: Record<string, any>,
   ) {}
 
   async paginate(): Promise<ListResponseType<TResponse>> {
@@ -27,8 +29,13 @@ export class PaginateQuery<
       take: this.limit,
       where: this.where,
       include: this.include,
+      orderBy: this.orderBy,
     });
 
+    const pageOutOfBound = skip >= total && total > 0;
+    if (pageOutOfBound) {
+      throw new BadRequestException('Page number exceeds total pages available');
+    }
     return {
       success: true,
       error: null,

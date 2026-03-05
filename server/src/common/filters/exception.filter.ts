@@ -41,13 +41,17 @@ export class ExceptionsFilter implements ExceptionFilter {
       } else {
         message = exceptionResponse;
       }
-    } else if (exception instanceof PrismaClientKnownRequestError) {
-      status = HttpStatus.BAD_REQUEST;
-      message = exception.message;
-      this.logger.error(exception.stack);
     } else if (exception instanceof Error) {
       message = exception.message;
       this.logger.error(exception.stack);
+    } else {
+      // Handle Prisma or unknown errors
+      message = 'Unknown error occurred';
+      if (exception instanceof PrismaClientKnownRequestError) {
+        status = HttpStatus.BAD_REQUEST;
+        message = exception.message;
+      }
+      this.logger.error(`Unhandled exception: ${JSON.stringify(exception)}`);
     }
 
     const errorResponse: ErrorResponse = {

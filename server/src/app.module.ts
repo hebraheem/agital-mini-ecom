@@ -7,10 +7,14 @@ import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt.guard';
 import { ExceptionsFilter } from './common/filters/exception.filter';
 import { UserModule } from './user/user.module';
+import { ProductService } from './product/product.service';
+import { ProductController } from './product/product.controller';
+import { ProductModule } from './product/product.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
-  imports: [GlobalConfigModule, AuthModule, UserModule],
-  controllers: [AppController],
+  imports: [GlobalConfigModule, AuthModule, UserModule, ProductModule, PrismaModule],
+  controllers: [AppController, ProductController],
   providers: [
     AppService,
     {
@@ -25,6 +29,7 @@ import { UserModule } from './user/user.module';
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
+    ProductService,
   ],
 })
 export class AppModule {}

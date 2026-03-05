@@ -49,9 +49,8 @@ model Product {
   inStock          Boolean
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
-  priceId          String   @db.ObjectId
 
-  @@index([name, shortDescription, longDescription, inStock])
+  @@index([name, shortDescription, longDescription, inStock, createdAt])
 }
 
 type Image {

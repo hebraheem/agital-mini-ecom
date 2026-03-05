@@ -4,7 +4,7 @@ import { UserResponseDto } from '../../user/types/user-response.type';
 export type ResponseType<T> = {
   success: boolean;
   error: string | null;
-  data: T;
+  data: T | null;
 };
 
 export type ListResponseType<T> = {
