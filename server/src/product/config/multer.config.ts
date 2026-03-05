@@ -1,6 +1,5 @@
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { v4 as uuidv4 } from 'uuid';
 import { Request } from 'express';
 
 export const multerConfig = {
@@ -11,7 +10,7 @@ export const multerConfig = {
       file: Express.Multer.File,
       callback: (error: Error | null, filename: string) => void,
     ) => {
-      const uniqueName = `${uuidv4()}${extname(file.originalname)}`;
+      const uniqueName = `${crypto.randomUUID()}${extname(file.originalname)}`;
       callback(null, uniqueName);
     },
   }),
