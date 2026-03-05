@@ -199,6 +199,13 @@ export class ProductResponseDto {
   })
   @Type(() => Number)
   averageRating?: number;
+
+  @ApiProperty({
+    description: 'Total number of reviews for the product',
+    example: 10,
+  })
+  @Type(() => Number)
+  reviewCount?: number;
 }
 
 export class ProductQueryDto {

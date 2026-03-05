@@ -174,7 +174,7 @@ export class ProductService {
     return {
       success: true,
       error: null,
-      data: { ...product, averageRating } as ProductResponseDto,
+      data: { ...product, reviewCount: ratings.length, averageRating } as ProductResponseDto,
     };
   }
 
@@ -292,6 +292,7 @@ const mapProductToResponseDto = (
       price: product.price,
       images: product.images,
       averageRating,
+      reviewCount: ratings.length,
       createdAt: product.createdAt,
       updatedAt: product.updatedAt,
     };
