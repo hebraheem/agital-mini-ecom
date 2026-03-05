@@ -11,9 +11,10 @@ import { ProductService } from './product/product.service';
 import { ProductController } from './product/product.controller';
 import { ProductModule } from './product/product.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { ReviewModule } from './review/review.module';
 
 @Module({
-  imports: [GlobalConfigModule, AuthModule, UserModule, ProductModule, PrismaModule],
+  imports: [GlobalConfigModule, AuthModule, UserModule, ProductModule, ReviewModule, PrismaModule],
   controllers: [AppController, ProductController],
   providers: [
     AppService,
