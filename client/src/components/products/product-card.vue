@@ -54,7 +54,7 @@
             </span>
           </div>
           <div v-if="product.price.discount > 0" class="text-sm text-green-600">
-            Save {{ product.price.discount }}%
+            Save {{ product.price.discount.toFixed(2) }}%
           </div>
         </div>
 

@@ -88,7 +88,7 @@ const loading = computed(() => productStore.loading)
 const error = computed(() => productStore.error)
 
 const productQuery: ProductQuery = reactive({
-  limit: 10,
+  limit: 12,
   page: 1,
   search: '',
   inStock: undefined,

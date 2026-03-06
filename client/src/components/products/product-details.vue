@@ -117,7 +117,7 @@
                 v-if="product.price.discount > 0"
                 class="ml-4 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium"
               >
-                Save {{ product.price.discount }}%
+                Save {{ product.price.discount.toFixed(2) }}%
               </span>
             </div>
           </div>
