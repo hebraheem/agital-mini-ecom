@@ -20,6 +20,13 @@
               >
                 Products
               </router-link>
+              <router-link
+                v-if="authStore.isAuthenticated"
+                to="/users"
+                class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 hover:text-blue-600"
+              >
+                Users
+              </router-link>
             </div>
           </div>
 

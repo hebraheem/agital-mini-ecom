@@ -41,6 +41,12 @@ const router = createRouter({
       component: () => import('@/components/auth/sign-up.vue'),
     },
     {
+      path: '/users',
+      name: 'users',
+      component: () => import('@/components/user/user-list.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/:catchAll(.*)*',
       name: 'not-found',
       component: () => import('@/components/not-found.vue'),

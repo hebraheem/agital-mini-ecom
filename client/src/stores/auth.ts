@@ -11,7 +11,6 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => {
     // In real applications, you should verify the token's validity and expiration
     // I just check if it exists for simplicity
-
     return !!token.value && !!user.value
   })
 
@@ -20,8 +19,8 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await authService.login(data)
       if (response.success && response.data) {
         token.value = response.data.accessToken
-        await fetchAuthUser()
         localStorage.setItem('token', response.data.accessToken)
+        await fetchAuthUser()
         return true
       }
       return false
@@ -47,8 +46,8 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await authService.signup(data)
       if (response.success && response.data) {
         token.value = response.data.token.accessToken
-        await fetchAuthUser()
         localStorage.setItem('token', response.data.token.accessToken)
+        await fetchAuthUser()
         return true
       }
       return false
