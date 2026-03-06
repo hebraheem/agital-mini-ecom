@@ -1,0 +1,89 @@
+import { PrismaClient } from '@prisma/client';
+import { faker } from '@faker-js/faker';
+import * as bcrypt from 'bcryptjs';
+
+const prisma = new PrismaClient();
+
+async function main() {
+  console.log('Seeding database...');
+
+  await prisma.review.deleteMany();
+  await prisma.product.deleteMany();
+  await prisma.user.deleteMany();
+
+  // ---------- USERS ----------
+  const users: any[] = [];
+
+  for (let i = 0; i < 20; i++) {
+    const user = await prisma.user.create({
+      data: {
+        email: faker.internet.email(),
+        name: faker.person.fullName(),
+        password: await bcrypt.hash('password123', 10),
+        birthdate: faker.date.birthdate(),
+      },
+    });
+
+    users.push(user);
+  }
+
+  console.log('Users created:', users.length);
+
+  // ---------- PRODUCTS ----------
+  const products: any[] = [];
+
+  for (let i = 0; i < 20; i++) {
+    const product = await prisma.product.create({
+      data: {
+        name: faker.commerce.productName(),
+        version: `${faker.number.int({ min: 1, max: 5 })}.${faker.number.int({ min: 0, max: 9 })}`,
+        shortDescription: faker.commerce.productDescription(),
+        longDescription: faker.lorem.paragraph(),
+        inStock: faker.datatype.boolean(),
+        images: [
+          {
+            url: faker.image.urlPicsumPhotos(),
+            alt: faker.commerce.productName(),
+          },
+        ],
+        price: {
+          reseller: faker.number.int({ min: 50, max: 300 }),
+          RRP: faker.number.int({ min: 100, max: 500 }),
+          discount: faker.number.float({ min: 0, max: 0.4 }),
+        },
+      },
+    });
+
+    products.push(product);
+  }
+
+  console.log('Products created:', products.length);
+
+  // ---------- REVIEWS ----------
+  const reviews: any[] = [];
+
+  for (let i = 0; i < 200; i++) {
+    const review = await prisma.review.create({
+      data: {
+        content: faker.lorem.sentences(2),
+        rating: faker.number.int({ min: 1, max: 5 }),
+        userId: faker.helpers.arrayElement(users).id,
+        productId: faker.helpers.arrayElement(products).id,
+      },
+    });
+
+    reviews.push(review);
+  }
+
+  console.log('Reviews created:', reviews.length);
+
+  console.log('Seeding complete!');
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
