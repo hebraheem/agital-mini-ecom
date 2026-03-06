@@ -13,11 +13,12 @@ async function bootstrap() {
   const apiPrefix: string | undefined = configService.get('app.apiPrefix');
   const apiVersion: string | undefined = configService.get('app.apiVersion');
   const corsOrigin: string | undefined = configService.get('app.corsOrigin');
+  console.log('corsOrigin', corsOrigin);
 
   app.setGlobalPrefix(`${apiPrefix}/${apiVersion}`);
 
   app.enableCors({
-    origin: corsOrigin,
+    origin: 'http://localhost:5173', //corsOrigin,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],

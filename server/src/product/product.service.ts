@@ -185,15 +185,15 @@ export class ProductService {
     const { page = 1, limit = 10, inStock, search, toRated } = query;
     const where: any = {};
     const include = {
-      reviews: {
-        select: { rating: true },
-      },
+      reviews: true,
     };
     let orderBy: any = { createdAt: 'desc' };
     if (toRated) {
       orderBy = {
         reviews: {
-          _count: 'desc',
+          _avg: {
+            rating: 'desc',
+          },
         },
       };
     }
@@ -221,6 +221,101 @@ export class ProductService {
       orderBy,
     );
     return paginate.paginate();
+  }
+
+  /**
+   * Get top-rated products with optional filters.
+   * This method uses MongoDB-like aggregation to calculate average ratings and sort by them.
+   * */
+  async getTopRatedProducts(query: ProductQueryDto): Promise<ListResponseType<ProductResponseDto>> {
+    const { page = 1, limit = 10, inStock, search, toRated } = query;
+    const skip = (page - 1) * limit;
+
+    const match: any = {};
+    const prismaWhere: any = {};
+
+    if (inStock !== undefined) {
+      match.inStock = inStock === 'true';
+    }
+
+    if (search) {
+      match.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { shortDescription: { $regex: search, $options: 'i' } },
+        { longDescription: { $regex: search, $options: 'i' } },
+      ];
+
+      // Specifically for Prisma filter
+      prismaWhere.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { shortDescription: { contains: search, mode: 'insensitive' } },
+        { longDescription: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    const pipeline: any[] = [
+      { $match: match },
+      {
+        $lookup: {
+          from: 'Review',
+          localField: '_id',
+          foreignField: 'productId',
+          as: 'reviews',
+          pipeline: [
+            {
+              $project: { rating: 1 }, // only rating needed
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          averageRating: { $avg: '$reviews.rating' },
+          reviewCount: { $size: '$reviews' },
+        },
+      },
+      {
+        $addFields: {
+          id: { $toString: '$_id' },
+        },
+      },
+      {
+        $project: {
+          reviews: 0,
+          _id: 0,
+        },
+      },
+    ];
+
+    if (toRated) {
+      pipeline.push({ $sort: { averageRating: -1 } });
+    } else {
+      pipeline.push({ $sort: { createdAt: -1 } });
+    }
+
+    pipeline.push({ $skip: skip });
+    pipeline.push({ $limit: limit });
+
+    const products = (await this.prismaService.product.aggregateRaw({
+      pipeline,
+    })) as unknown as ProductResponseDto[];
+
+    const total = await this.prismaService.product.count({
+      where: prismaWhere,
+    });
+
+    return {
+      data: products,
+      success: true,
+      error: null,
+      meta: {
+        totalItems: total,
+        itemCount: products.length,
+        itemsPerPage: limit,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   /**

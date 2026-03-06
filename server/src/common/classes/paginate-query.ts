@@ -20,17 +20,18 @@ export class PaginateQuery<
   async paginate(): Promise<ListResponseType<TResponse>> {
     const skip = (this.page - 1) * this.limit;
 
-    const total = await this.prisma.count({
-      where: this.where,
-    });
-
-    const data = await this.prisma.findMany({
-      skip,
-      take: this.limit,
-      where: this.where,
-      include: this.include,
-      orderBy: this.orderBy,
-    });
+    const [data, total] = await Promise.all([
+      this.prisma.findMany({
+        skip,
+        take: this.limit,
+        where: this.where,
+        orderBy: this.orderBy,
+        include: this.include,
+      }),
+      this.prisma.count({
+        where: this.where,
+      }),
+    ]);
 
     const pageOutOfBound = skip >= total && total > 0;
     if (pageOutOfBound) {

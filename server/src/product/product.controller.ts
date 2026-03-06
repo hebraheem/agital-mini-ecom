@@ -40,9 +40,9 @@ export class ProductController {
     description: 'Top-rated products retrieved successfully',
     type: [ProductResponseDto],
   })
-  async getTopRatedProducts() {
-    const query: ProductQueryDto = { toRated: true, limit: 10 };
-    return this.productService.getProducts(query);
+  async getTopRatedProducts(@Query('search') search: string) {
+    const query: ProductQueryDto = { toRated: true, limit: 10, inStock: 'true', search };
+    return this.productService.getTopRatedProducts(query);
   }
 
   @Post()

@@ -128,7 +128,7 @@ export class ReviewQueryDto {
   @IsOptional()
   @IsNumber()
   @Min(1)
-  @Min(5)
+  @Max(5)
   @Type(() => Number)
   rating?: number;
 }

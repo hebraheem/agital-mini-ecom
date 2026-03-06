@@ -35,7 +35,15 @@ export class ReviewService {
     if (rating) {
       where.rating = rating;
     }
-    const paginator = new PaginateQuery(this.prismaService.review, page, limit, where);
+    const include = {
+      user: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    };
+    const paginator = new PaginateQuery(this.prismaService.review, page, limit, where, include);
     return paginator.paginate() as Promise<ReviewListResponseDto>;
   }
 
