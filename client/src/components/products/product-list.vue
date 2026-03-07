@@ -83,6 +83,7 @@ const error = computed(() => productStore.error)
 
 const productQuery: ProductQuery = reactive({
   limit: 12,
+  inStock: true,
   page: 1,
   search: '',
 })

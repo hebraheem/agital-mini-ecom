@@ -74,6 +74,12 @@
               scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
+              Review count
+            </th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
               Joined
             </th>
           </tr>
@@ -100,6 +106,11 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="text-sm text-gray-500">
                 {{ user.birthdate ? formatDate(user.birthdate) : 'N/A' }}
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-500">
+                {{ user.totalReviews ?? 0 }} {{ user.totalReviews === 1 ? 'review' : 'reviews' }}
               </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

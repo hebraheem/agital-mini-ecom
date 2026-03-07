@@ -29,7 +29,10 @@ export class AuthService {
    * @throws An error if the registration process fails (e.g., email already exists).
    * */
   async register(data: UserRequestDto): Promise<ResponseType<AuthUserResponseDto>> {
-    const existingUser = await this.prismaService.user.findUnique({ where: { email: data.email } });
+    data.email = data.email.toLowerCase();
+    const existingUser = await this.prismaService.user.findUnique({
+      where: { email: data.email },
+    });
     if (existingUser) {
       throw new ConflictException('User with this email already exists');
     }
@@ -53,7 +56,9 @@ export class AuthService {
    * @throws An error if the user is not found or if the credentials are invalid.
    * */
   async login(email: string, password: string): Promise<ResponseType<TokenResponse>> {
-    const user = await this.prismaService.user.findUnique({ where: { email } });
+    const user = await this.prismaService.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
     if (!user) {
       throw new NotFoundException('User with this email does exists');
     }

@@ -7,6 +7,7 @@ export interface User {
   birthdate?: string | null
   createdAt: string
   updatedAt: string
+  totalReviews?: number
 }
 
 export interface UserQuery {

@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log('Seeding database...');
+  const seedStart = Date.now();
 
   await prisma.review.deleteMany();
   await prisma.product.deleteMany();
@@ -13,7 +14,7 @@ async function main() {
 
   // ---------- USERS ----------
   const users: any[] = [];
-
+  const start = Date.now();
   for (let i = 0; i < 20; i++) {
     const user = await prisma.user.create({
       data: {
@@ -27,11 +28,14 @@ async function main() {
     users.push(user);
   }
 
+  const end = Date.now();
+  console.log(`Users seeding took ${(end - start) / 1000} seconds`);
   console.log('Users created:', users.length);
 
   // ---------- PRODUCTS ----------
   const products: any[] = [];
 
+  const productStart = Date.now();
   for (let i = 0; i < 25; i++) {
     const product = await prisma.product.create({
       data: {
@@ -55,11 +59,14 @@ async function main() {
     products.push(product);
   }
 
+  const productEnd = Date.now();
+  console.log(`Products seeding took ${(productEnd - productStart) / 1000} seconds`);
   console.log('Products created:', products.length);
 
   // ---------- REVIEWS ----------
   const reviews: any[] = [];
 
+  const reviewStart = Date.now();
   for (let i = 0; i < 250; i++) {
     const review = await prisma.review.create({
       data: {
@@ -73,8 +80,12 @@ async function main() {
     reviews.push(review);
   }
 
+  const reviewEnd = Date.now();
+  console.log(`Reviews seeding took ${(reviewEnd - reviewStart) / 1000} seconds`);
   console.log('Reviews created:', reviews.length);
-  console.log('Seeding complete!');
+
+  const seedEnd = Date.now();
+  console.log(`Seeding complete! took ${(seedEnd - seedStart) / 1000} seconds`);
 }
 
 main()
