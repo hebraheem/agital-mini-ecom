@@ -135,10 +135,7 @@
         <h2 class="text-2xl font-bold text-gray-900 mb-6">Customer Reviews</h2>
 
         <!-- Add Review Form (for authenticated users) -->
-        <div
-          v-if="authStore.isAuthenticated && !alreadyReviewed"
-          class="mb-8 bg-gray-50 p-6 rounded-lg"
-        >
+        <div v-if="authStore.isAuthenticated" class="mb-8 bg-gray-50 p-6 rounded-lg">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">Write a Review</h3>
           <form @submit.prevent="submitReview">
             <div class="mb-4">
@@ -301,7 +298,6 @@ const authStore = useAuthStore()
 
 const product = ref<Product | null>(null)
 const selectedImage = ref<any>(null)
-const alreadyReviewed = ref(false)
 const reviews = ref<Review[]>([])
 const submittingReview = ref(false)
 const reviewForm = ref({
@@ -333,7 +329,6 @@ watch(
   async () => {
     reviewQuery.page = 1 // Reset to first page when filter changes
     reviews.value = await reviewStore.getReviews(route.params.id as string, reviewQuery)
-    alreadyReviewed.value = reviews.value.some((review) => review.userId === authStore.user?.id)
   },
 )
 
@@ -344,7 +339,6 @@ function goToReviewPage(page: number) {
 
 async function loadReviews() {
   reviews.value = await reviewStore.getReviews(route.params.id as string, reviewQuery)
-  alreadyReviewed.value = reviews.value.some((review) => review.userId === authStore.user?.id)
 }
 
 async function loadData() {
@@ -358,7 +352,6 @@ async function loadData() {
     selectedImage.value = productData.images[0]
   }
   reviews.value = review
-  alreadyReviewed.value = reviews.value.some((review) => review.userId === authStore.user?.id)
 }
 
 async function submitReview() {

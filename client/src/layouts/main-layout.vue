@@ -5,6 +5,14 @@
         <div class="flex justify-between h-16">
           <div class="flex">
             <router-link to="/" class="flex items-center text-xl font-bold text-gray-900">
+              <div
+                v-if="isAuthenticated"
+                class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-2"
+              >
+                <span class="text-blue-600 font-medium text-sm">
+                  {{ getInitials(user!.name) }}
+                </span>
+              </div>
               agital.soft Shop
             </router-link>
             <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
@@ -38,8 +46,8 @@
               <button @click="handleLogout" class="btn btn-secondary text-sm">Logout</button>
             </template>
             <template v-else>
-              <router-link to="/login" class="btn btn-secondary text-sm"> Login </router-link>
-              <router-link to="/signup" class="btn btn-primary text-sm"> Sign up </router-link>
+              <router-link to="/login" class="btn btn-secondary text-sm"> Login</router-link>
+              <router-link to="/signup" class="btn btn-primary text-sm"> Sign up</router-link>
             </template>
           </div>
         </div>
@@ -55,9 +63,15 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { getInitials } from '@/utils.ts'
+import { computed } from 'vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
+
+const user = computed(() => authStore.user)
+
+const isAuthenticated = computed(() => authStore.isAuthenticated)
 
 function handleLogout() {
   authStore.logout()

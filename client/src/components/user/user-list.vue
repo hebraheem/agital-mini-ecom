@@ -137,7 +137,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import Pagination from '@/components/pagination.vue'
-import { formatDate } from '@/utils.ts'
+import { formatDate, getInitials } from '@/utils.ts'
 
 const userStore = useUserStore()
 
@@ -175,14 +175,5 @@ function goToPage(page: number) {
   if (page >= 1 && page <= totalPages.value) {
     loadUsers(page)
   }
-}
-
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .substring(0, 2)
 }
 </script>
