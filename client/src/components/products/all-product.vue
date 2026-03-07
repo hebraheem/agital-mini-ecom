@@ -2,9 +2,9 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Search Bar -->
     <div class="mb-8 flex justify-between w-full">
-      <div class="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+      <div class="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4 w-full">
         <!-- Search -->
-        <div class="w-full md:max-w-xl">
+        <div class="w-2/3 md:max-w-xl">
           <div class="relative">
             <input
               v-model.trim="productQuery.search"
@@ -30,8 +30,8 @@
         </div>
 
         <!-- Stock Filter -->
-        <div class="flex">
-          <span class="text-sm font-medium text-gray-700 mb-1"> Stock Status </span>
+        <div class="flex items-center gap-4">
+          <p class="text-sm text-nowrap font-medium text-gray-700 mb-1">Stock Status</p>
           <select
             v-model="productQuery.inStock"
             id="stock-filter"
@@ -66,8 +66,22 @@
         <div v-if="newestProducts.length === 0" class="text-center py-8 text-gray-500">
           No products found
         </div>
-        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          <product-card v-for="product in newestProducts" :key="product.id" :product="product" />
+        <div v-else>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <product-card v-for="product in newestProducts" :key="product.id" :product="product" />
+          </div>
+
+          <!-- Pagination -->
+          <div class="mt-8 bg-white rounded-lg shadow-sm">
+            <pagination
+              :current-page="currentPage"
+              :total-pages="totalPages"
+              :total="totalProducts"
+              :page-limit="itemsPerPage"
+              item-name="products"
+              @page-change="goToPage"
+            />
+          </div>
         </div>
       </section>
     </div>
@@ -78,6 +92,7 @@
 import { onMounted, computed, reactive, ref, watch } from 'vue'
 import { useProductStore } from '@/stores/product'
 import ProductCard from './product-card.vue'
+import Pagination from '@/components/pagination.vue'
 import type { Product, ProductQuery } from '@/api/products.ts'
 
 const productStore = useProductStore()
@@ -86,6 +101,10 @@ const newestProducts = ref<Product[]>([])
 
 const loading = computed(() => productStore.loading)
 const error = computed(() => productStore.error)
+const totalProducts = computed(() => productStore.totalProducts)
+const currentPage = computed(() => productStore.currentPage)
+const totalPages = computed(() => productStore.totalPages)
+const itemsPerPage = computed(() => productStore.itemsPerPage)
 
 const productQuery: ProductQuery = reactive({
   limit: 12,
@@ -104,10 +123,20 @@ async function loadProducts() {
   newestProducts.value = await productStore.getProducts(productQuery)
 }
 
-watch(productQuery, () => {
-  clearTimeout(searchTimeout)
-  searchTimeout = setTimeout(async () => {
-    await loadProducts()
-  }, 300)
-})
+function goToPage(page: number) {
+  productQuery.page = page
+  loadProducts()
+}
+
+// Watch only search and inStock changes, not page
+watch(
+  () => [productQuery.search, productQuery.inStock],
+  () => {
+    clearTimeout(searchTimeout)
+    searchTimeout = setTimeout(async () => {
+      productQuery.page = 1
+      await loadProducts()
+    }, 300)
+  },
+)
 </script>

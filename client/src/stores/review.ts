@@ -1,12 +1,16 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { reviewService, type Review, type CreateReviewData, type ReviewQuery } from '@/api/reviews'
+import { reviewService, type CreateReviewData, type ReviewQuery } from '@/api/reviews'
 
 export const useReviewStore = defineStore('review', () => {
-  // const reviews = ref<Review[]>([])
   const loading = ref(false)
   const error = ref('')
-  // const filterRating = ref<number | null>(null)
+
+  // Pagination metadata
+  const totalReviews = ref(0)
+  const currentPage = ref(1)
+  const totalPages = ref(1)
+  const itemsPerPage = ref(10)
 
   // Get reviews for a product
   async function getReviews(productId: string, query?: ReviewQuery) {
@@ -21,7 +25,13 @@ export const useReviewStore = defineStore('review', () => {
 
       const response = await reviewService.getReviews(productId, reviewQuery)
       if (response.success || response.data) {
-        // reviews.value = response.data || []
+        // Update pagination metadata if available
+        if (response.meta) {
+          totalReviews.value = response.meta.totalItems
+          currentPage.value = response.meta.currentPage
+          totalPages.value = response.meta.totalPages
+          itemsPerPage.value = response.meta.itemsPerPage
+        }
         return response.data
       }
     } catch (err: any) {
@@ -74,10 +84,7 @@ export const useReviewStore = defineStore('review', () => {
     error.value = ''
 
     try {
-      const response = await reviewService.deleteReview(id)
-      if (response.success) {
-        // reviews.value = reviews.value.filter((r) => r.id !== id)
-      }
+      await reviewService.deleteReview(id)
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Failed to delete review'
       throw err
@@ -86,33 +93,22 @@ export const useReviewStore = defineStore('review', () => {
     }
   }
 
-  // // Set rating filter
-  // function setRatingFilter(rating: number | null) {
-  //   //filterRating.value = rating
-  // }
-
   // Clear error
   function clearError() {
     error.value = ''
   }
 
-  // // Reset reviews
-  // function resetReviews() {
-  //  // reviews.value = []
-  //   filterRating.value = null
-  // }
-
   return {
-    // reviews,
     loading,
     error,
-    // filterRating,
+    totalReviews,
+    currentPage,
+    totalPages,
+    itemsPerPage,
     getReviews,
     createReview,
     updateReview,
     deleteReview,
-    // setRatingFilter,
     clearError,
-    // resetReviews,
   }
 })

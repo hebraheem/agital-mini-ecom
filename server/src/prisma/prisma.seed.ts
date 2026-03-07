@@ -32,7 +32,7 @@ async function main() {
   // ---------- PRODUCTS ----------
   const products: any[] = [];
 
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 25; i++) {
     const product = await prisma.product.create({
       data: {
         name: faker.commerce.productName(),
@@ -40,16 +40,14 @@ async function main() {
         shortDescription: faker.commerce.productDescription(),
         longDescription: faker.lorem.paragraph(),
         inStock: faker.datatype.boolean(),
-        images: [
-          {
-            url: faker.image.urlPicsumPhotos(),
-            alt: faker.commerce.productName(),
-          },
-        ],
+        images: Array.from({ length: Math.floor(Math.random() * 7) + 1 }, () => ({
+          url: faker.image.urlPicsumPhotos(),
+          alt: faker.commerce.productName(),
+        })),
         price: {
-          reseller: faker.number.int({ min: 50, max: 300 }),
+          reseller: faker.number.int({ min: 50, max: 400 }),
           RRP: faker.number.int({ min: 100, max: 500 }),
-          discount: faker.number.float({ min: 0, max: 0.4 }),
+          discount: faker.number.float({ min: 10, max: 50 }),
         },
       },
     });
@@ -62,7 +60,7 @@ async function main() {
   // ---------- REVIEWS ----------
   const reviews: any[] = [];
 
-  for (let i = 0; i < 200; i++) {
+  for (let i = 0; i < 250; i++) {
     const review = await prisma.review.create({
       data: {
         content: faker.lorem.sentences(2),
@@ -76,7 +74,6 @@ async function main() {
   }
 
   console.log('Reviews created:', reviews.length);
-
   console.log('Seeding complete!');
 }
 

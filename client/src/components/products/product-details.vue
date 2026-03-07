@@ -264,6 +264,18 @@
             <p class="text-sm font-medium text-gray-900">By {{ review.user.name }}</p>
             <p class="text-gray-700">{{ review.content }}</p>
           </div>
+
+          <!-- Pagination for Reviews -->
+          <div v-if="totalReviewPages > 1" class="mt-6 bg-white rounded-lg shadow-sm">
+            <pagination
+              :current-page="currentReviewPage"
+              :total-pages="totalReviewPages"
+              :total="totalReviews"
+              :page-limit="reviewItemsPerPage"
+              item-name="reviews"
+              @page-change="goToReviewPage"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -276,8 +288,10 @@ import { useRoute } from 'vue-router'
 import { useProductStore } from '@/stores/product'
 import { useReviewStore } from '@/stores/review'
 import { useAuthStore } from '@/stores/auth'
+import Pagination from '@/components/pagination.vue'
 import type { Product } from '@/api/products.ts'
 import type { Review, ReviewQuery } from '@/api/reviews.ts'
+import { formatDate } from '@/utils.ts'
 
 const route = useRoute()
 
@@ -298,6 +312,10 @@ const reviewForm = ref({
 const loading = computed(() => productStore.loading)
 const loadingReviews = computed(() => reviewStore.loading)
 const error = computed(() => productStore.error)
+const totalReviews = computed(() => reviewStore.totalReviews)
+const currentReviewPage = computed(() => reviewStore.currentPage)
+const totalReviewPages = computed(() => reviewStore.totalPages)
+const reviewItemsPerPage = computed(() => reviewStore.itemsPerPage)
 
 const reviewQuery: ReviewQuery = reactive({
   limit: 10,
@@ -309,17 +327,24 @@ onMounted(async () => {
   await loadData()
 })
 
-watch(reviewQuery, async () => {
+// Watch only rating filter changes, not page
+watch(
+  () => reviewQuery.rating,
+  async () => {
+    reviewQuery.page = 1 // Reset to first page when filter changes
+    reviews.value = await reviewStore.getReviews(route.params.id as string, reviewQuery)
+    alreadyReviewed.value = reviews.value.some((review) => review.userId === authStore.user?.id)
+  },
+)
+
+function goToReviewPage(page: number) {
+  reviewQuery.page = page
+  loadReviews()
+}
+
+async function loadReviews() {
   reviews.value = await reviewStore.getReviews(route.params.id as string, reviewQuery)
   alreadyReviewed.value = reviews.value.some((review) => review.userId === authStore.user?.id)
-})
-
-async function loadProduct() {
-  product.value = await productStore.getProduct(route.params.id as string)
-  const productData = product.value
-  if (productData && productData.images && productData.images.length > 0) {
-    selectedImage.value = productData.images[0]
-  }
 }
 
 async function loadData() {
@@ -353,10 +378,5 @@ async function submitReview() {
   } finally {
     submittingReview.value = false
   }
-}
-
-function formatDate(dateString: string) {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 }
 </script>

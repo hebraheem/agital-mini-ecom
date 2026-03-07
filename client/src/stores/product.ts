@@ -6,6 +6,12 @@ export const useProductStore = defineStore('product', () => {
   const loading = ref(false)
   const error = ref('')
 
+  // Pagination metadata
+  const totalProducts = ref(0)
+  const currentPage = ref(1)
+  const totalPages = ref(1)
+  const itemsPerPage = ref(10)
+
   // Get all products with optional query params
   async function getProducts(query?: ProductQuery) {
     loading.value = true
@@ -14,6 +20,13 @@ export const useProductStore = defineStore('product', () => {
     try {
       const response = await productService.getProducts(query)
       if (response.success) {
+        // Update pagination metadata if available
+        if (response.meta) {
+          totalProducts.value = response.meta.totalItems
+          currentPage.value = response.meta.currentPage
+          totalPages.value = response.meta.totalPages
+          itemsPerPage.value = response.meta.itemsPerPage
+        }
         return response.data
       }
     } catch (err: any) {
@@ -123,6 +136,10 @@ export const useProductStore = defineStore('product', () => {
   return {
     loading,
     error,
+    totalProducts,
+    currentPage,
+    totalPages,
+    itemsPerPage,
     getProducts,
     topRatedProduct,
     getProduct,
